@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<title>Explainer</title>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.18.2/codemirror.min.css">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.18.2/codemirror.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.18.2/mode/javascript/javascript.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.18.2/keymap/sublime.min.js"></script>	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.18.2/theme/solarized.css">
+		<script src="g9.js"></script>
+		<style>
+*{
+	margin:0;
+	padding:0;
+}
+#code{
+	position:absolute;
+	top:0;
+	bottom:0;
+}
+
+#blackboard{
+	width: 100vw;
+	height: 100vh;
+}
+		</style>
+	</head>
+	<body>
+		<svg id="blackboard"></svg>
+		<textarea id="code">
+g9({
+	radius: 100,
+	angle: 0
+},function render(data, ctx){
+	var sides = 10
+	for(var i=0; i &lt; sides; i++){
+		var a = data.angle + i/sides * Math.PI * 2
+		var r1 = data.radius
+		var r2 = r1/2
+		ctx.point(r1 * Math.cos( a), r1 * Math.sin( a))
+		ctx.point(r2 * Math.cos(-a), r2 * Math.sin(-a), {fill: 'red'})
+
+		/* uncomment this following line to make this
+		   drawing more exciting! */
+
+		/*ctx.line(r1 * Math.cos( a), r1 * Math.sin( a),
+		  r2 * Math.cos(-a), r2 * Math.sin(-a)) */
+
+	}
+}).insertInto('#blackboard');
+		</textarea>
+		<script>
+var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+	lineNumbers: true
+});
+editor.setSize(null, 1000);
+editor.setOption('extraKeys', {
+	"Cmd-Enter": run,
+	"Ctrl-Enter": run
+})
+
+function run(){
+	document.getElementById("blackboard").innerHTML = ""
+
+	eval(editor.getValue())
+	document.body.parentElement.scrollTop=0;
+}
+run();
+
+
+		</script>
+	</body>
+</html>
