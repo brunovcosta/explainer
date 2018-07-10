@@ -6,8 +6,18 @@
 		<title>Explainer</title>
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.18.2/codemirror.min.css">
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.18.2/codemirror.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.18.2/mode/javascript/javascript.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.18.2/keymap/sublime.min.js"></script>	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.18.2/theme/solarized.css">
+		<link rel="stylesheet" href="https://necolas.github.io/normalize.css/4.0.0/normalize.css">
+		<link rel="stylesheet" href="http://codemirror.net/lib/codemirror.css">
+		<link rel="stylesheet" href="http://codemirror.net/addon/fold/foldgutter.css">
+		<link rel="stylesheet" href="http://codemirror.net/addon/hint/show-hint.css">
+		<link rel="stylesheet" href="http://codemirror.net/addon/lint/lint.css">
+		<script src="http://coffeescript.org/extras/coffee-script.js"></script>
+		<script src="http://coffeelint.org/js/coffeelint.js"></script>
+		<script src="http://codemirror.net/mode/coffeescript/coffeescript.js"></script>
+		<script src="http://codemirror.net/addon/lint/coffeescript-lint.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.18.2/keymap/sublime.min.js"></script>
+		<script src="https://coffeescript.org/v2/browser-compiler/coffeescript.js"></script>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.18.2/theme/solarized.css">
 		<script src="g9.js"></script>
 		<style>
 *{
@@ -24,37 +34,38 @@
 	width: 100vw;
 	height: 100vh;
 }
+svg *{
+	cursor: move
+}
 		</style>
 	</head>
 	<body>
 		<div id="blackboard"></div>
-		<textarea id="code">
-g9({
-	radius: 100,
+		<textarea id="code">g9({
+	radius: 100
 	angle: 0
-},function render(data, ctx){
-	var sides = 10
-	for(var i=0; i &lt; sides; i++){
-		var a = data.angle + i/sides * Math.PI * 2
-		var r1 = data.radius
-		var r2 = r1/2
+},(data, ctx)-&gt;
+	sides = 10
+	for i in [0 .. sides]
+		a = data.angle + i/sides * Math.PI * 2
+		r1 = data.radius
+		r2 = r1/2
 		ctx.point(r1 * Math.cos( a), r1 * Math.sin( a))
 		ctx.point(r2 * Math.cos(-a), r2 * Math.sin(-a), {fill: 'red'})
-
-		/* uncomment this following line to make this
-		   drawing more exciting! */
-
-		/*ctx.line(r1 * Math.cos( a), r1 * Math.sin( a),
-		  r2 * Math.cos(-a), r2 * Math.sin(-a)) */
-
-	}
-}).insertInto('#blackboard');
-		</textarea>
+)</textarea>
 		<script>
 var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
-	lineNumbers: true
+	mode: "text/x-coffeescript",
+	tabMode: "indent",
+	styleActiveLine: true,
+	lineNumbers: true,
+	lineWrapping: true,
+	autoCloseTags: true,
+	foldGutter: true,
+	dragDrop: true,
+	lint: true,
+	gutters: ["CodeMirror-lint-markers", "CodeMirror-linenumbers", "CodeMirror-foldgutter"]
 });
-editor.setSize(null, 1000);
 editor.setOption('extraKeys', {
 	"Cmd-Enter": run,
 	"Ctrl-Enter": run
@@ -63,7 +74,7 @@ editor.setOption('extraKeys', {
 function run(){
 	document.getElementById("blackboard").innerHTML = ""
 
-	eval(editor.getValue())
+	CoffeeScript.eval(editor.getValue()).insertInto('#blackboard');
 	document.body.parentElement.scrollTop=0;
 }
 run();
