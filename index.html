@@ -73,22 +73,28 @@ editor.setOption('extraKeys', {
 	"Ctrl-Enter": run
 })
 
+if(localStorage.code)
+	editor.setValue(localStorage.code);
+
 function run(){
 	document.getElementById("blackboard").innerHTML = ""
 	document.getElementById("blackboard").style.height = "100vh";
 
-	CoffeeScript.eval(editor.getValue()).align('left', 'top').insertInto('#blackboard');
-	document.body.parentElement.scrollTop=0;
-	svgPanZoom("svg")
-	document.onkeyup = function (evt){
-		if(evt.keyCode === 27)
-			document.getElementById("blackboard").style.height = "0";
-
+	try{
+		CoffeeScript.eval(editor.getValue()).align('left', 'top').insertInto('#blackboard');
+		document.body.parentElement.scrollTop=0;
+		localStorage.code = editor.getValue();
+		svgPanZoom("svg").updateBBox().center();
+	}catch(e){
+		alert(e)
 	}
 }
 run();
 
-
+document.onkeyup = function (evt){
+	if(evt.keyCode === 27)
+		document.getElementById("blackboard").style.height = "0";
+}
 		</script>
 	</body>
 </html>
