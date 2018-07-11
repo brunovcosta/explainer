@@ -71,7 +71,8 @@ var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
 editor.setOption('extraKeys', {
 	"Cmd-Enter": run,
 	"Ctrl-Enter": run
-})
+});
+editor.setSize("100vw","100vh");
 
 if(localStorage.code)
 	editor.setValue(localStorage.code);
