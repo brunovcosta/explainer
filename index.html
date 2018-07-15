@@ -45,17 +45,39 @@ svg *{
 	<body>
 		<div id="blackboard"></div>
 		<textarea id="code">g9 {
-	radius: 100
-	angle: 0
+  radius: 100
+  angle: 0
 },(data, ctx)-&gt;
-	sides = 10
-	for i in [0 .. sides]
-		a  = data.angle + i/sides * Math.PI * 2
-		r1 = data.radius
-		r2 = r1/2
-		ctx.point r1 * (Math.cos  a), r1 * (Math.sin  a)
-		ctx.point r2 * (Math.cos -a), r2 * (Math.sin -a),fill: 'red'</textarea>
-		<script>
+  sides = 10
+  for i in [0 .. sides]
+    a  = data.angle + i/sides * Math.PI * 2
+    r1 = data.radius
+    r2 = r1/2
+    ctx.point r1 * (Math.cos  a), r1 * (Math.sin  a)
+    ctx.point r2 * (Math.cos -a), r2 * (Math.sin -a),fill: 'red'</textarea>
+	<script>
+function json(str) {
+	if(str.startsWith("?"))
+		str = str.substring(1);
+	var pairs = str.split('&');
+	var result = {};
+	pairs.forEach(function (pair) {
+		pair = pair.split('=');
+		var name = pair[0]
+		var value = pair[1]
+		if (name.length)
+			if (result[name] !== undefined) {
+				if (!result[name].push) {
+					result[name] = [result[name]];
+				}
+				result[name].push(value || '');
+			} else {
+				result[name] = value || '';
+			}
+	});
+	return (result);
+}
+
 var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
 	mode: "text/x-coffeescript",
 	tabMode: "indent",
@@ -70,11 +92,16 @@ var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
 });
 editor.setOption('extraKeys', {
 	"Cmd-Enter": run,
-	"Ctrl-Enter": run
+	"Ctrl-Enter": run,
+	"Ctrl-S": function(){
+		prompt("Copy",location.origin+location.pathname+"?code="+encodeURI(editor.getValue()))
+	}
 });
 editor.setSize("100vw","100vh");
 
-if(localStorage.code)
+if(json(location.search).code)
+	editor.setValue(decodeURI(json(location.search).code));
+else if(localStorage.code)
 	editor.setValue(localStorage.code);
 
 function run(){
